@@ -1,0 +1,63 @@
+/* styles for the home page */
+.home-page {
+  width: 1400px;
+  margin: 50px auto;
+  display: grid;
+  grid-template-columns: 60% 40%;
+}
+
+.home-content {
+  padding: 20px 30px;
+}
+
+.home-form {
+  padding: 40px 30px;
+}
+
+/* content card */
+.content-card {
+  background-color: #fff;
+  border-left: 5px solid #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 5px;
+  margin: 10px 0;
+  display: grid;
+  grid-template-columns: 85% 15%;
+}
+
+.content-card:hover {
+  border-left: 5px solid #f6952d;
+}
+
+.content-task {
+  padding-left: 10px;
+}
+
+.content-deleteButton {
+  height: auto;
+  width: auto;
+  background-color: rgba(255, 0, 0, 0.5);
+}
+.content-deleteButton:hover {
+  background-color: rgba(255, 0, 0, 0.8);
+}
+
+/* content form */
+.content-form-container {
+  text-align: center;
+}
+.content-form {
+  margin: 10px auto;
+  display: flex;
+  align-items: center;
+}
+.content-form textarea {
+  max-width: 100%;
+  min-width: 100%;
+  min-height: 60px;
+  padding: 10px;
+  margin-bottom: 20px;
+}

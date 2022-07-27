@@ -1,46 +1,44 @@
 import React from 'react';
 import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
+
+// font awesome
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye } from '@fortawesome/free-solid-svg-icons';
+
 
 // styles 
 import '../assets/auth.css';
 
-// GET requests
-// sign up
-const signup_postRequest = async () => {
-    const response = await fetch('/auth/signup/');
+// API request
+const postRequest = async (payload, url) => {
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    });
     const data = await response.json();
-
-    if (!data.ok) {
-        return console.log('Oops, something went wrong');
-    }
 
     return data;
 };
 
-// Login
-const login_postRequest = async () => {
-    const response = await fetch('/auth/login/');
-    const data = await response.json();
+const Auth = ({ state, method, user }) => {
 
-    if (!data.ok) {
-        return console.log('Oops, something went wrong');
-    }
-
-    return data;
-
-
-};
-
-
-const Auth = () => {
     const [isLoggingIn, setIsLoggingIn] = useState(true);
     const [isSigningUp, setIsSigningUp] = useState(false);
-    const [data, setData] = useState('');
     // states for the form
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errorVal, setErrorVal] = useState(false);
+    // validations
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [errorVal, setErrorVal] = useState(null);
+    // animation
     const [isLoading, setIsLoading] = useState(false);
+    // type of the password field 
+    const [type, setType] = useState('password');
 
 
     // function changes the state
@@ -50,56 +48,69 @@ const Auth = () => {
         setIsSigningUp(prev => !prev);
     };
 
-    // function handles the specific request
-    const handleSignUp = async (e) => {
+    // function handles the users form submission request
+    const handleSubmit = async (e, url) => {
         e.preventDefault();
 
         // checking validations
         // my validations could be stricter but for the sake of the task, it is just to make sure that the name exist
-        if (!email) {
-            return setErrorVal(true);
-        }
-        if (!password) {
-            return setErrorVal(true);
+        if (!email || !password) {
+            setErrorVal('Please enter in your details');
+            return;
         }
 
-        // api request
-        const data = await signup_postRequest();
-
-        console.log(data.message);
-
-        setErrorVal(false);
-        setEmail('');
-        setPassword('');
-
-    };
-
-    // Function handles a suer trying to sign in
-    const handleLogin = async (e) => {
-        e.preventDefault();
-
-
-        // checking validations
-        // my validations could be stricter but for the sake of the task, it is just to make sure that the name exist
-        if (!email) {
-            return setErrorVal(true);
-        }
-        if (!password) {
-            return setErrorVal(true);
-        }
+        // Its a loading animation but this whole api request search is to fast to actual properly enjoy it
+        // quite sad :(
         setIsLoading(true);
 
+
+        //  create payload
+        const payload = {
+            'email': email,
+            'password': password
+        };
+
         // api request
-        const data = await login_postRequest();
+        const data = await postRequest(payload, `auth/${url}`);
 
-        console.log(data.message);
+        if (data.status === 400) {
+            setIsLoading(false);
+            setEmailError('');
+            setPasswordError('');
+            if (data.errors.email) { setEmailError(data.errors.email); }
+            if (data.errors.password) { setPasswordError(data.errors.password); }
+            return;
+        }
 
-        setErrorVal(false);
+        if (data.status === 401) {
+            setIsLoading(false);
+            setEmailError('');
+            setPasswordError('');
+            setErrorVal(data.error);
+            return;
+        }
+
+        setErrorVal(null);
         setEmail('');
         setPassword('');
         setIsLoading(false);
+
+        if (url === 'signup') {
+            console.log('you have successfully signed up');
+            return method(data.user);
+        }
+
+        if (url === 'login') {
+            console.log('you have successfully logged up');
+            return method(data.user);
+        }
+
+
     };
+
+    if (state) return <Navigate to="/home" />;
     return (
+
         <div className="auth-page">
             <h1>Sign in to view your collection of cars</h1>
 
@@ -107,8 +118,20 @@ const Auth = () => {
                 <form>
                     {isLoggingIn && <h3>Log in</h3>}
                     {isSigningUp && <h3>Sign up</h3>}
-                    <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                    <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <input className='emailInput' type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <div className="error">{emailError}</div>
+                    <div className="passwordInput">
+                        <input type={type} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
+                        <button onClick={(e) => {
+                            e.preventDefault();
+                            if (type === 'password') {
+                                setType('text');
+                            } else if (type === 'text') {
+                                setType('password');
+                            }
+                        }}><FontAwesomeIcon icon={faEye} /></button>
+                    </div>
+                    <div className="error">{passwordError}</div>
 
                     {isLoading ? <div className='loading'>
                         <div></div>
@@ -121,13 +144,13 @@ const Auth = () => {
                             {/* depending on the state, certain buttons will be active that contain certain functions */}
                             {/* if the user is trying to log in */}
                             {isLoggingIn && <>
-                                <button className='active' onClick={handleLogin} >Login</button>
+                                <button className='active' onClick={(e) => handleSubmit(e, 'login')} >Login</button>
                                 <button className='inactive' onClick={handleState}>Sign up</button>
                             </>}
                             {/* if the user is trying to signup */}
                             {isSigningUp && <>
                                 <button className='inactive' onClick={handleState}>Login</button>
-                                <button className='active' onClick={handleSignUp}>Sign up</button>
+                                <button className='active' onClick={(e) => handleSubmit(e, 'signup')}>Sign up</button>
                             </>}
                         </div>}
 
@@ -135,9 +158,10 @@ const Auth = () => {
 
             </div>
             <div >
-                {errorVal && <h4 className='errorVal'>Please enter the correct details</h4>}
+                {errorVal && <h4 className='errorVal error'>{errorVal}</h4>}
             </div>
         </div>
+
     );
 };
 

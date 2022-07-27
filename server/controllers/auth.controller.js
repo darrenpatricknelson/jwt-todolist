@@ -1,6 +1,7 @@
 // This file will setup all the functions for the specific routes
 // imports
 const User = require('../models/user.model.js');
+const jwt = require('jsonwebtoken');
 
 // handle errors function
 const handleErrors = (err) => {
@@ -39,30 +40,68 @@ const signup_getRequest = (req, res) => {
 
 // POST
 const signup_postRequest = async (req, res) => {
+    // will hash password for better protection in a production environment
     const { email, password } = req.body;
 
     try {
+        // create payload/ user
         const user = await User.create({ email, password });
-        res.status(200).json(user);
+
+        //  create jwt 
+        const token = jwt.sign(JSON.stringify(user), 'jwt-secret', { algorithm: 'HS256' });
+        res.status(200).send({
+            status: 200,
+            token: token,
+            user: user
+        });
     } catch (err) {
         const errors = handleErrors(err);
-        res.status(400).json({ errors });
+        res.status(400).json({
+            status: 400,
+            errors
+        });
     }
 };
 
-// 
-// LOGIN requests
+// LOGIN
 // GET
 const login_getRequest = (req, res) => {
     res.status(200).json({
         ok: true,
-        message: 'User is trying to login'
+        status: 200,
+        message: 'User is trying to sign up'
     });
 };
 
 // POST
 const login_postRequest = async (req, res) => {
-    res.send('User login');
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        return res.status(401).json({
+            status: 401,
+            error: `User not found, check the details you have entered or sign up if you have not already`
+        });
+    }
+
+    // check if password is correct
+    const isMatch = user.password === password;
+
+    if (!isMatch) {
+        return res.status(401).json({
+            status: 401,
+            error: 'Password is incorrect'
+        });
+    }
+
+    // create jwt
+    const token = jwt.sign(
+        JSON.stringify(user),
+        'jwt-secret',
+        { algorithm: 'HS256' }
+    );
+    res.status(200).send({ 'token': token, 'user': user });
 };
 
 
