@@ -5,10 +5,12 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const auth = require('./routes/auth.routes.js');
+const bodyParser = require('body-parser');
 
 
 // middleware
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(cors());
 // the following middleware outputs information about the request in the terminal
 app.use((req, res, next) => {
@@ -21,6 +23,21 @@ app.get('/', (req, res) => {
     res.json({
         message: 'Hello'
     });
+});
+
+// test (can be removed)
+app.post('/test', (req, res) => {
+    const user = req.body.username;
+    const pwd = req.body.password;
+
+    payload = {
+        'name': user,
+        'password': pwd
+    };
+
+    const token = jwt.sign(JSON.stringify(payload), 'jwr-secret', { algorithm: 'HS256' });
+
+    res.send({ 'token': token });
 });
 
 // routes

@@ -73,6 +73,8 @@ const Auth = ({ state, method, user }) => {
         // api request
         const data = await postRequest(payload, `auth/${url}`);
 
+        // console.log(data);
+
         if (data.status === 400) {
             setIsLoading(false);
             setEmailError('');
@@ -97,12 +99,12 @@ const Auth = ({ state, method, user }) => {
 
         if (url === 'signup') {
             console.log('you have successfully signed up');
-            return method(data.user);
+            return method(data);
         }
 
         if (url === 'login') {
             console.log('you have successfully logged up');
-            return method(data.user);
+            return method(data);
         }
 
 

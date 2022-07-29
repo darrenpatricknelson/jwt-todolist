@@ -29,26 +29,28 @@ const handleErrors = (err) => {
 
 
 // 
-// SIGNUP requests
-// GET
-const signup_getRequest = (req, res) => {
-    res.status(200).json({
-        ok: true,
-        message: 'User is trying to sign up'
-    });
-};
+// authentication process
 
 // POST
 const signup_postRequest = async (req, res) => {
     // will hash password for better protection in a production environment
     const { email, password } = req.body;
 
+    // Create a payload
+    let payload = {
+        "email": email,
+        "password": password
+    };
+
+
     try {
-        // create payload/ user
-        const user = await User.create({ email, password });
 
         //  create jwt 
-        const token = jwt.sign(JSON.stringify(user), 'jwt-secret', { algorithm: 'HS256' });
+        const token = jwt.sign(JSON.stringify(payload), 'jwt-secret', { algorithm: 'HS256' });
+
+        // create payload/ user
+        const user = await User.create({ email, token });
+
         res.status(200).send({
             status: 200,
             token: token,
@@ -63,21 +65,12 @@ const signup_postRequest = async (req, res) => {
     }
 };
 
-// LOGIN
-// GET
-const login_getRequest = (req, res) => {
-    res.status(200).json({
-        ok: true,
-        status: 200,
-        message: 'User is trying to sign up'
-    });
-};
-
 // POST
 const login_postRequest = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
 
+    // if there is no user, tell the user to check details or sign up
     if (!user) {
         return res.status(401).json({
             status: 401,
@@ -85,9 +78,13 @@ const login_postRequest = async (req, res) => {
         });
     }
 
-    // check if password is correct
-    const isMatch = user.password === password;
+    // decoded the stored jwt token
+    const decoded = jwt.verify(user.token, 'jwt-secret');
 
+    // check if password is correct
+    const isMatch = decoded.password === password;
+
+    // if the passwords don't match, send error
     if (!isMatch) {
         return res.status(401).json({
             status: 401,
@@ -95,20 +92,54 @@ const login_postRequest = async (req, res) => {
         });
     }
 
-    // create jwt
-    const token = jwt.sign(
-        JSON.stringify(user),
-        'jwt-secret',
-        { algorithm: 'HS256' }
+    // if everything is successful, send back the user db
+    res.status(200).send({
+        status: 200,
+        token: user.token,
+        user: user
+    });
+};
+
+// HI moderator, please note that I am aware that the following api requests need to be in a different controller
+// the route handler for this controller is ('/auth/..') and these are not authorization requests
+// I would put it in another controller and have a different route handler ('/api/...') but for the sake tof the task, I have left them here :)
+// 
+// 
+// User adding and deleting tasks
+// Adding 
+const addTask = async (req, res) => {
+    const { id, task } = req.body;
+
+    // add the new task to the tasks array
+    const oldEntry = await User.findOneAndUpdate(
+        { _id: id },
+        {
+            tasks: task
+        }
     );
-    res.status(200).send({ 'token': token, 'user': user });
+
+    // find the updated db entry
+    const updatedEntry = await User.findById({ id });
+
+    // response
+    res.status(200).send(updatedEntry);
+};
+
+
+// Deleting
+const deleteTask = async (req, res) => {
+    res.status(200).json({
+        ok: true,
+        status: 200,
+        message: 'User is trying to sign up'
+    });
 };
 
 
 // exporting all the controller functions
 module.exports = {
-    signup_getRequest,
     signup_postRequest,
-    login_getRequest,
-    login_postRequest
+    login_postRequest,
+    addTask,
+    deleteTask
 };

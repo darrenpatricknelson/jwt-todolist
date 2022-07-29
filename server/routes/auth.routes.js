@@ -4,32 +4,32 @@ const router = express.Router();
 
 // imports from the controller
 const {
-    signup_getRequest,
     signup_postRequest,
-    login_getRequest,
-    login_postRequest
+    login_postRequest,
+    addTask,
+    deleteTask
 } = require('../controllers/auth.controller.js');
 
-// setup routes
-// 
-// SIGN UP (GET)
-//
-router.get('/signup', signup_getRequest);
-
+// Authentication process
 // 
 // SIGN UP (POST)
 // 
 router.post('/signup', signup_postRequest);
 
 // 
-// LOGIN (GET)
-// 
-router.get('/login', login_getRequest);
-
-// 
 // LOGIN (POST)
 // 
 router.post('/login', login_postRequest);
+
+
+// 
+// ADDING A TASK (PATCH)
+//
+router.patch('/addNew', addTask);
+// 
+// DELETING A TASK (PATCH)
+// 
+router.patch('/login', deleteTask);
 
 // 
 // LOGOUT (GET)

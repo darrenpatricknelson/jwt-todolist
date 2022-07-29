@@ -1,3 +1,4 @@
 MODERATOR.TXT
 /client/node_modules
 /server/node_modules
+/server/requests.rest

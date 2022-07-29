@@ -3,6 +3,13 @@ const mongoose = require('mongoose');
 // I've installed a package via npm to validate emails
 const { isEmail } = require('validator');
 
+const userTasks = new mongoose.Schema({
+    tasks: {
+        type: String,
+        required: false
+    }
+});
+
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -11,11 +18,11 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         validate: [isEmail, 'Please enter a valid email']
     },
-    password: {
+    token: {
         type: String,
-        required: [true, 'Please enter a password'],
-        minlength: [6, 'Minimum password length is 6 characters']
-    }
+        required: true
+    },
+    tasks: [userTasks]
 });
 
 const User = mongoose.model('user', userSchema);

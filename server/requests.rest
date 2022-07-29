@@ -1,1 +1,21 @@
 GET http://localhost:3001/
+
+###
+
+POST http://localhost:3001/test
+content-type: application/json
+
+{
+    "username": "darren",
+    "password": "nelson"
+}
+
+###
+
+GET http://localhost:3001/resource
+content-type: application/json
+
+{
+    "username": "darren",
+    "password": "nelson"
+}
