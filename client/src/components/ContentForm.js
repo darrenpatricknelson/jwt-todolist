@@ -18,7 +18,7 @@ const addNewTask = async (payload) => {
     return data;
 };
 
-const ContentForm = ({ method, user }) => {
+const ContentForm = ({ setUser, user }) => {
     const [task, setTask] = useState('');
     const [errorVal, setErrorVal] = useState('');
 
@@ -39,7 +39,9 @@ const ContentForm = ({ method, user }) => {
         // api request
         const data = await addNewTask(payload);
 
-        console.log(user);
+        if (data.status === 200) {
+            setUser(data.user);
+        }
     };
     return (
         <div className="content-form-container">

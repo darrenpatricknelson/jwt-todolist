@@ -19,3 +19,11 @@ content-type: application/json
     "username": "darren",
     "password": "nelson"
 }
+
+###
+DELETE http://localhost:3001/auth/deleteTask HTTP/1.1
+content-type: application/json
+{
+    "id": "62e405944f56dd72cf8bb88f",
+    "taskID": "62e40ba2c55ff4079e7853ec"
+}

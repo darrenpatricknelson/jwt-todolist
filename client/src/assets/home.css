@@ -1,9 +1,10 @@
 /* styles for the home page */
 .home-page {
-  width: 1400px;
+  max-width: 1400px;
   margin: 50px auto;
   display: grid;
   grid-template-columns: 60% 40%;
+  border: 1px solid;
 }
 
 .home-content {

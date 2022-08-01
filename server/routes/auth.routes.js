@@ -4,11 +4,15 @@ const router = express.Router();
 
 // imports from the controller
 const {
+    getUserDetails,
     signup_postRequest,
     login_postRequest,
     addTask,
     deleteTask
 } = require('../controllers/auth.controller.js');
+
+// get user details
+router.get('/user/:email', getUserDetails);
 
 // Authentication process
 // 
@@ -29,7 +33,7 @@ router.patch('/addNew', addTask);
 // 
 // DELETING A TASK (PATCH)
 // 
-router.patch('/login', deleteTask);
+router.delete('/deleteTask', deleteTask);
 
 // 
 // LOGOUT (GET)

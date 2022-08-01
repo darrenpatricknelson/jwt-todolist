@@ -35,7 +35,7 @@ app.post('/test', (req, res) => {
         'password': pwd
     };
 
-    const token = jwt.sign(JSON.stringify(payload), 'jwr-secret', { algorithm: 'HS256' });
+    const token = jwt.sign(JSON.stringify(payload), process.env.SECRET_KEY, { algorithm: 'HS256' });
 
     res.send({ 'token': token });
 });

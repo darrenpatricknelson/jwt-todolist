@@ -8,21 +8,13 @@ import Home from './components/Home.js';
 
 
 const App = () => {
-  /* 
-  ! REMEMBER!!!
-
-  REMEMBER TO CHANGE THE STATE TO FALSE
-  
-  CHANGE THE STATE TO FALSE!!!!
-  TODO: Find a different way to handle these session variables. Possibly cookies 
-  */
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // function that deals with a user signing up/ logging in
   const handleAuth = (user) => {
     sessionStorage.setItem('auth', true);
     const state = sessionStorage.getItem('auth');
-    sessionStorage.setItem('user', JSON.stringify(user.user));
+    sessionStorage.setItem('user', JSON.stringify(user.user.email));
 
     setIsLoggedIn(state);
   };
@@ -47,7 +39,7 @@ const App = () => {
 
   return (
     <div className="app">
-      <Navbar state={isLoggedIn} method={handleLogout} />
+      <Navbar state={isLoggedIn} handleLogout={handleLogout} />
       <div className="pages">
         <Routes>
           <Route path="/" element={<Auth method={handleAuth} state={isLoggedIn} />} />

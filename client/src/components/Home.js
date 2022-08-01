@@ -8,36 +8,48 @@ import ContentForm from './ContentForm.js';
 // styles
 import '../assets/home.css';
 
-/* 
-! 2 requests!
-TODO: DELETE + POST 
- */
-const lists = [1, 2, 2, 3, 5];
+export const getUserDetails = async (email) => {
+    const res = await fetch(`/auth/user/${email}`);
+    const data = await res.json();
 
+    if (!data) {
+        return console.log('something went wrong ');
+    }
+
+    return data;
+};
 
 const Home = ({ state }) => {
     const [user, setUser] = useState(null);
+    const [tasks, setTasks] = useState(null);
 
 
     // creating a session variable 
     useEffect(() => {
 
-        const newUser = JSON.parse(sessionStorage.getItem('user'));
-        setUser(newUser);
+        const getUser = async () => {
+            const email = await JSON.parse(sessionStorage.getItem('user'));
+
+            const { user } = await getUserDetails(email);
+
+            setUser(user[0]);
+            setTasks(user[0].tasks);
+        };
+
+        getUser();
     }, []);
 
-    // deconstruct the user object to get the tasks
-    // const { tasks } = user;
+
 
     if (!state) return <Navigate to="/" />;
     return (
         <div className="home-page">
             <div className="home-content">
                 <h2>A list of all your tasks</h2>
-                {/* {tasks.map((task) => <ContentCard key={user._id} list={task} />)} */}
+                {tasks && tasks.map((task) => <ContentCard key={task._id} setUser={setUser} user={user} task={task} />)}
             </div>
             <div className="home-form">
-                <ContentForm method={setUser} user={user} />
+                <ContentForm setUser={setUser} user={user} />
             </div>
         </div>
     );

@@ -92,6 +92,22 @@ const Auth = ({ state, method, user }) => {
             return;
         }
 
+        if (data.status === 402) {
+            setIsLoading(false);
+            setEmailError('');
+            setPasswordError('');
+            setErrorVal(data.error);
+            return;
+        }
+
+        if (data.status === 403) {
+            setIsLoading(false);
+            setEmailError('');
+            setPasswordError('');
+            setErrorVal(data.error);
+            return;
+        }
+
         setErrorVal(null);
         setEmail('');
         setPassword('');

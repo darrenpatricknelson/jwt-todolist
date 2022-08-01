@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import '../assets/navbar.css';
 
 
-const Navbar = ({ state, method }) => {
+const Navbar = ({ state, handleLogout }) => {
     if (state) {
         var user = JSON.parse(sessionStorage.getItem('user'));
         // console.log(newUser.email);
@@ -21,8 +21,8 @@ const Navbar = ({ state, method }) => {
                 <div><h1>Your Todo List</h1></div>
                 {state &&
                     <div className='userDetails'>
-                        <h5>Welcome {user.email}</h5>
-                        <button onClick={method}>Logout</button>
+                        <h5>Welcome {user}</h5>
+                        <button onClick={handleLogout}>Logout</button>
                     </div>
                 }
             </nav>
