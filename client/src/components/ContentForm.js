@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useUserContext } from "../hooks/useUserContext.js";
 
 // api request
 const addNewTask = async (payload) => {
@@ -18,7 +19,8 @@ const addNewTask = async (payload) => {
     return data;
 };
 
-const ContentForm = ({ setUser, user }) => {
+const ContentForm = ({ user }) => {
+    const { dispatch } = useUserContext();
     const [task, setTask] = useState('');
     const [errorVal, setErrorVal] = useState('');
 
@@ -26,11 +28,15 @@ const ContentForm = ({ setUser, user }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // validate the task being added
         if (!task) {
             return setErrorVal('Please enter a task');
         }
 
+        // clear any error validations
         setErrorVal('');
+
+        // create a payload to make an api request
         const payload = {
             'id': user._id,
             'task': task
@@ -39,8 +45,10 @@ const ContentForm = ({ setUser, user }) => {
         // api request
         const data = await addNewTask(payload);
 
+        // error validation
         if (data.status === 200) {
-            setUser(data.user);
+            setTask('');
+            dispatch({ type: 'UPDATE_USER_CREATE_TASK', payload: data.user });
         }
     };
     return (

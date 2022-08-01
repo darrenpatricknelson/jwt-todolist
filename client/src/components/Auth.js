@@ -24,8 +24,8 @@ const postRequest = async (payload, url) => {
     return data;
 };
 
-const Auth = ({ state, method, user }) => {
-
+const Auth = ({ state, handleAuth }) => {
+    // create states
     const [isLoggingIn, setIsLoggingIn] = useState(true);
     const [isSigningUp, setIsSigningUp] = useState(false);
     // states for the form
@@ -59,7 +59,7 @@ const Auth = ({ state, method, user }) => {
             return;
         }
 
-        // Its a loading animation but this whole api request search is to fast to actual properly enjoy it
+        // Its a loading animation but this whole api request search is to fast to actual properly enjoy it. Maybe on your side you will be able to see it 
         // quite sad :(
         setIsLoading(true);
 
@@ -73,8 +73,7 @@ const Auth = ({ state, method, user }) => {
         // api request
         const data = await postRequest(payload, `auth/${url}`);
 
-        // console.log(data);
-
+        // the following is error validations based off of the status code I added to the response from the backend
         if (data.status === 400) {
             setIsLoading(false);
             setEmailError('');
@@ -108,24 +107,15 @@ const Auth = ({ state, method, user }) => {
             return;
         }
 
+        // if no errors, update states and lost the user in
         setErrorVal(null);
         setEmail('');
         setPassword('');
         setIsLoading(false);
-
-        if (url === 'signup') {
-            console.log('you have successfully signed up');
-            return method(data);
-        }
-
-        if (url === 'login') {
-            console.log('you have successfully logged up');
-            return method(data);
-        }
-
-
+        return handleAuth(data);
     };
 
+    // if the user tries to access the /home path through the url without being signed in, they will be redirected back to the authentication page
     if (state) return <Navigate to="/home" />;
     return (
 
@@ -151,6 +141,7 @@ const Auth = ({ state, method, user }) => {
                     </div>
                     <div className="error">{passwordError}</div>
 
+                    {/* a loading state animation */}
                     {isLoading ? <div className='loading'>
                         <div></div>
                         <div></div>
@@ -176,6 +167,7 @@ const Auth = ({ state, method, user }) => {
 
             </div>
             <div >
+                {/* error validation */}
                 {errorVal && <h4 className='errorVal error'>{errorVal}</h4>}
             </div>
         </div>

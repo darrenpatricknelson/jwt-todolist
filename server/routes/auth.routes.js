@@ -35,10 +35,5 @@ router.patch('/addNew', addTask);
 // 
 router.delete('/deleteTask', deleteTask);
 
-// 
-// LOGOUT (GET)
-// 
-// router.get('/' () => {})
-
 // exports 
 module.exports = router;

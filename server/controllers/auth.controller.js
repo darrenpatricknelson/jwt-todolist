@@ -66,11 +66,13 @@ const signup_postRequest = async (req, res) => {
         // create payload/ user
         const user = await User.create({ email, password, token });
 
+        // response
         res.status(200).send({
             status: 200,
             user
         });
     } catch (err) {
+        // handling errors
         const errors = handleErrors(err);
         res.status(400).json({
             status: 400,
